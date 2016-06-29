@@ -12,6 +12,12 @@
 	height: 600px;
 }
 
+#firebaseui-auth-container {
+    margin: 0 auto;
+    position: relative;
+    top: 11em;
+}
+
 
 
 
