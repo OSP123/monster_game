@@ -17,39 +17,14 @@
 
         <script src="https://www.gstatic.com/firebasejs/3.1.0/firebase.js"></script>
 
-        <script>
-          // Initialize Firebase
-          var config = {
-            apiKey: "AIzaSyDTDMsuvkR461lrFxIahJCAK0_i0RI8MBw",
-            authDomain: "monstergame-9944d.firebaseapp.com",
-            databaseURL: "https://monstergame-9944d.firebaseio.com",
-            storageBucket: "",
-          };
-          firebase.initializeApp(config);
-        </script>
+        <script src="js/creds.js"></script>
 
         <script src="https://www.gstatic.com/firebasejs/ui/live/0.4/firebase-ui-auth.js"></script>
 
         <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/live/0.4/firebase-ui-auth.css" />
 
-        <script type="text/javascript">
-          // FirebaseUI config.
-          var uiConfig = {
-            'signInSuccessUrl': '<url-to-redirect-to-on-success>',
-            'signInOptions': [
-              // Leave the lines as is for the providers you want to offer your users.
-              firebase.auth.EmailAuthProvider.PROVIDER_ID
-            ],
-            // Terms of service url.
-            'tosUrl': '<your-tos-url>',
-          };
+        <script type="text/javascript" src="js/auth-config.js"></script>
 
-          // Initialize the FirebaseUI Widget using Firebase.
-          var ui = new firebaseui.auth.AuthUI(firebase.auth());
-          // The start method will wait until the DOM is loaded.
-          ui.start('#firebaseui-auth-container', uiConfig);
-        </script>
-        
         <script src="js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
     </head>
     <body>
@@ -82,20 +57,17 @@
     <div class="container">
       <!-- Example row of columns -->
       <div class="row">
-        <div class="col-md-4">
-          <h2>Heading</h2>
-          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+        <div class="col-sm-2 col-sm-offset-1 player-card">
+          <p><a class="btn btn-default btn-sm" href="#" role="button">Player One</a></p>
         </div>
-        <div class="col-md-4">
-          <h2>Heading</h2>
-          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-       </div>
-        <div class="col-md-4">
-          <h2>Heading</h2>
-          <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+        <div class="col-sm-2 col-sm-offset-1 player-card">
+          <p><a class="btn btn-default btn-sm" href="#" role="button">Player Two</a></p> 
+        </div>
+        <div class="col-sm-2 col-sm-offset-1 player-card">
+          <p><a class="btn btn-default btn-sm" href="#" role="button">Player Three</a></p> 
+        </div>
+        <div class="col-sm-2 col-sm-offset-1 player-card">
+          <p><a class="btn btn-default btn-sm" href="#" role="button">Player Four</a></p> 
         </div>
       </div>
 
@@ -106,9 +78,7 @@
       </footer>
     </div> <!-- /container -->        
 
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-
-        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
+        <script src="js/vendor/jquery-1.11.2.min.js"</script>
 
         <script src="js/vendor/bootstrap.min.js"></script>
 
