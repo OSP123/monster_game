@@ -9,13 +9,16 @@
         <title></title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
         <link rel="stylesheet" href="css/bootstrap.min.css">
+
         <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+
         <link rel="stylesheet" href="css/main.css">
 
-        <script src="https://www.gstatic.com/firebasejs/3.1.0/firebase.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/3.1.0/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/3.1.0/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/3.1.0/firebase-database.js"></script>
 
         <script src="js/creds.js"></script>
 
@@ -46,31 +49,32 @@
         </div><!--/.navbar-collapse -->
       </div>
     </nav>
-
-    <!-- Main jumbotron for a primary marketing message or call to action -->
-    <div class="jumbotron">
-      <div class="container">
-        <div id="firebaseui-auth-container"></div>
-      </div>
-    </div>
-
     <div class="container">
       <!-- Example row of columns -->
       <div class="row">
-        <div class="col-sm-2 col-sm-offset-1 player-card">
-          <p><a class="btn btn-default btn-sm" href="#" role="button">Player One</a></p>
+        <div class="col-sm-3">
+           <div class="col-md-12 player-card">
+              <p>Player One</p>
+           </div>
         </div>
-        <div class="col-sm-2 col-sm-offset-1 player-card">
-          <p><a class="btn btn-default btn-sm" href="#" role="button">Player Two</a></p> 
+        <div class="col-sm-3">
+           <div class="col-md-12 player-card">
+              <p>Player Two</p>
+           </div>
         </div>
-        <div class="col-sm-2 col-sm-offset-1 player-card">
-          <p><a class="btn btn-default btn-sm" href="#" role="button">Player Three</a></p> 
+        <div class="col-sm-3">
+           <div class="col-md-12 player-card">
+              <p>Player Three</p>
+           </div>
         </div>
-        <div class="col-sm-2 col-sm-offset-1 player-card">
-          <p><a class="btn btn-default btn-sm" href="#" role="button">Player Four</a></p> 
+        <div class="col-sm-3">
+           <div class="col-md-12 player-card">
+              <p>Player Four</p>
+           </div>
         </div>
       </div>
 
+      <div id="firebaseui-auth-container"></div>
       <hr>
 
       <footer>

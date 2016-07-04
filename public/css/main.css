@@ -4,25 +4,25 @@
    Author's custom styles
    ========================================================================== */
 
-.jumbotron {
-	background-image: url("../img/monster.jpeg");
-	background-repeat: no-repeat;
-	background-size: cover;
-	background-position: center;
-	height: 400px;
+body { 
+  padding-top: 70px;
+  background-image: url("../img/monster.jpeg");
+  background-size: 100%;
+  background-position: center;
 }
 
 #firebaseui-auth-container {
-    margin: 0 auto;
-    position: relative;
-    top: 11em;
+  margin: 0 auto;
+  position: relative;
+  top: 11em;
 }
 
 .player-card {
-	height: 200px;
-    border: solid 1px;
-    border-radius: 11px;
-    text-align: center;
+	height: 400px;
+  border: solid 1px;
+  border-radius: 11px;
+  text-align: center;
+  background-color: #f5f5f5;
 }
 
 

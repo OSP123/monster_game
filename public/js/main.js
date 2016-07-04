@@ -1,8 +1,8 @@
 $( document ).ready(function() {
-	var myDataRef = new Firebase('https://monstergame-9944d.firebaseio.com');
-	var chatData = new Firebase('https://monstergame-9944d.firebaseio.com/chat');
-	var playersRef = new Firebase('https://monstergame-9944d.firebaseio.com/players');
-	var currentTurnRef = new Firebase('https://monstergame-9944d.firebaseio.com/turn');
+	var db = firebase.database();
+	var chatData = db.ref('/chat');
+	var playersRef = db.ref('/players');
+	var currentTurnRef = db.ref('/turn');
 
 	var username = "Guest";
 	var currentPlayers = null;
@@ -10,15 +10,27 @@ $( document ).ready(function() {
 	var playerNum = false;
 	var playerOneExists = false;
 	var playerTwoExists = false;
+	var playerThreeExists = false;
+	var playerFourExists = false;
 	var playerOneData = null;
 	var playerTwoData = null;
+	var playerThreeData = null;
+	var playerFourData = null;
 
 	//USERNAME LISTENERS
 	//Start button - takes username and tries to get user in game
-	$('#start').click(function() {
-	  if ($('#username').val() !== "") {
-	    username = capitalize($('#username').val());
-	    getInGame();
+	// $('#start').click(function() {
+	//   if ($('#username').val() !== "") {
+	//     username = capitalize($('#username').val());
+	//     getInGame();
+	//   }
+	// });
+
+	firebase.auth().onAuthStateChanged(function(user) {
+	  if (user) {
+	    currentPlayers++;
+	  } else {
+	    currentPlayers--;
 	  }
 	});
 
@@ -112,7 +124,7 @@ $( document ).ready(function() {
 	function getInGame() {
 	  //checks for current players, if theres a player one connected, then the user becomes player 2.
 	  //if there is no player one, then the user becomes player 1
-	  if (currentPlayers < 2) {
+	  if (currentPlayers < 4) {
 	    if (playerOneExists) {
 	      playerNum = 2;
 	    } else {
