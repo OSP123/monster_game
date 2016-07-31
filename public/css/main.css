@@ -13,8 +13,6 @@ body {
 
 #firebaseui-auth-container {
   margin: 0 auto;
-  position: relative;
-  top: 11em;
 }
 
 .player-card {
@@ -23,6 +21,10 @@ body {
   border-radius: 11px;
   text-align: center;
   background-color: #f5f5f5;
+}
+
+.player-card:nth-child(1) {
+  background-image: url("../img/pokemon_1.png");
 }
 
 
