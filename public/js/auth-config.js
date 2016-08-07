@@ -7,6 +7,15 @@ var uiConfig = {
   ],
   // Terms of service url.
   'tosUrl': '<your-tos-url>',
+  'callbacks': {
+	  'signInSuccess': function(currentUser, credential, redirectUrl) {
+	    // Do something.
+	    // Return type determines whether we continue the redirect automatically
+	    // or whether we leave that to developer to handle.
+	    console.log("You signed in successfully");
+	    return true;
+	  }
+	}
 };
 
 // Initialize the FirebaseUI Widget using Firebase.
