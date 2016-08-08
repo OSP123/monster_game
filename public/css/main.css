@@ -9,6 +9,7 @@ body {
   background-image: url("../img/monster.jpeg");
   background-size: 100%;
   background-position: center;
+  color: white;
 }
 
 #firebaseui-auth-container {
