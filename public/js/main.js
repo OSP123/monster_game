@@ -2,28 +2,20 @@ $( document ).ready(function() {
 	var db = firebase.database();
 	var playersRef = db.ref('/players');
 	var roomsRef = db.ref('/channels');
-	var profiles = db.ref('/profiles'); //This is where the profile of users will be stored. This might include the stats of the user over time, their avatar, and a few other things.
+	var profiles = db.ref('/profiles');
+	//This is where the profile of users will be stored. This might include the stats of the user over time, their avatar, and a few other things.
 
-	//USERNAME LISTENERS
-	//Start button - takes username and tries to get user in game
-	// $('#start').click(function() {
-	//   if ($('#username').val() !== "") {
-	//     username = capitalize($('#username').val());
-	//     getInGame();
-	//   }
-	// });
+	// A location under GAME_LOCATION that will store the list of 
+	// players who have joined the game (up to MAX_PLAYERS).
+	var PLAYERS_LOCATION = 'player_list';
 
-	function addRoomAndEmptySeats() {
+	// A location under GAME_LOCATION that you will use to store data 
+	// for each player (their game state, etc.)
+	var PLAYER_DATA_LOCATION = 'player_data';
 
-	  var newRoom = {
-	  	seat1: "empty",
-	  	seat2: "empty",
-	  	seat3: "empty",
-	  	seat4: "empty"
-	  }
-
-	  roomsRef.push(newRoom);
-	}
+	// The maximum number of players.  If there are already 
+	// NUM_PLAYERS assigned, users won't be able to join the game.
+	var NUM_PLAYERS = 4;
 
 	function signedInDisplay(displayName) {
 		$("#firebaseui-auth-container").hide();
@@ -37,104 +29,89 @@ $( document ).ready(function() {
         "</div>");
 	}
 
-	// function playerExists(uid) {
-		
-	// 	var result = false;
+	var initApp = function() {
+		firebase.auth().onAuthStateChanged(function(user) {
+	    if (user) {
+	      // User is signed in.
 
-	// 	playersRef.once("value", function(snapshot) {
-	// 	  snapshot.forEach(function(childSnapshot) {
-	// 			if (childSnapshot.val().uid == uid) {
-	// 				console.log("Player already exists");
-	// 				result = true;
-	// 			}
-	//   	});
-	// 	});
+	      user.getToken().then(function(accessToken) {
+	      	signedInDisplay(user.displayName);
+				  // Consider adding '/<unique id>' if you have multiple games.
+				  var gameRef = db.ref();
+				  assignPlayerNumberAndPlayGame(user.uid, gameRef);
+	      });
+	    } else {
+	      // User is signed out.
+	      signedOutDisplay(user.displayName);
+	    }
+	  }, function(error) {
+	    console.log(error);
+	  });
+	};
 
-	// 	return result;
-	// }
+	window.addEventListener('load', function() {
+		initApp();
+	});
 
-	// function findPlayer(uid) {
+	// Called after player assignment completes.
+	function playGame(myPlayerNumber, userId, justJoinedGame, gameRef) {
+	  var playerDataRef = gameRef.child(PLAYER_DATA_LOCATION).child(myPlayerNumber);
+	  alert('You are player number ' + myPlayerNumber + 
+	      '.  Your data will be located at ' + playerDataRef.toString());
 
-	// 	playersRef.once("value", function(snapshot) {
-	// 	  snapshot.forEach(function(childSnapshot) {
-	// 			if (childSnapshot.val().uid == uid) {
-	// 				console.log("We found it!");
-	// 				currentPlayer = childSnapshot.val();
-	// 			}
-	//   	});
-	// 	});
-	// }
-
-	function createPlayer(uid, displayName) {
-
-	  var playerData = {
-	    name: displayName,
-	    uid: uid,
-	    hitPoints: 100, //Default to 100 hitpoints for now
-	    turn: 0, // Default to 0 for now. This could be used later with a data ref to turns/
-	    playerImage: "", //Currently set to some default image. This will be based off of the character the user chooses.
-	    attacks: {
-	    	basicAttack: 35,
-	    	advancedAttack: 50,
-	    	ultraAttack: 75,
-	    	ridiculousAttack: 125
-	    },
-	    items: {},
-	    room: null
-	  };
-
-	  // Get a key for a new Player.
-	  var newPlayerKey = playersRef.push().key;
-
-	  // Write the new player's data in the players list.
-	  var updates = {};
-	  updates['/players/' + newPlayerKey] = playerData;
-
-	  return db.ref().update(updates);
+	  if (justJoinedGame) {
+	    alert('Doing first-time initialization of data.');
+	    playerDataRef.set({userId: userId, state: 'game state'});
+	  }
 	}
 
-	$("#testButton").on("click", function() {
-		firebase.auth().onAuthStateChanged(function(user) {
-	      if (user) {
-	        // User is signed in.
+	// Use transaction() to assign a player number, then call playGame().
+	function assignPlayerNumberAndPlayGame(userId, gameRef) {
+	  var playerListRef = gameRef.child(PLAYERS_LOCATION);
+	  var myPlayerNumber, alreadyInGame = false;
 
-	        user.getToken().then(function(accessToken) {
-	        	signedInDisplay(user.displayName);
-	        	// Can't update user, so create a "player"
-	        });
-	      } else {
-	        // User is signed out.
-	        signedOutDisplay(user.displayName);
+	  playerListRef.transaction(function(playerList) {
+	    // Attempt to (re)join the given game. Notes:
+	    //
+	    // 1. Upon very first call, playerList will likely appear null (even if the
+	    // list isn't empty), since Firebase runs the update function optimistically
+	    // before it receives any data.
+	    // 2. The list is assumed not to have any gaps (once a player joins, they 
+	    // don't leave).
+	    // 3. Our update function sets some external variables but doesn't act on
+	    // them until the completion callback, since the update function may be
+	    // called multiple times with different data.
+	    if (playerList === null) {
+	      playerList = [];
+	    }
+
+	    for (var i = 0; i < playerList.length; i++) {
+	      if (playerList[i] === userId) {
+	        // Already seated so abort transaction to not unnecessarily update playerList.
+	        alreadyInGame = true;
+	        myPlayerNumber = i; // Tell completion callback which seat we have.
+	        return;
 	      }
-	    }, function(error) {
-	      console.log(error);
-	    });
-	});
+	    }
 
+	    if (i < NUM_PLAYERS) {
+	      // Empty seat is available so grab it and attempt to commit modified playerList.
+	      playerList[i] = userId;  // Reserve our seat.
+	      myPlayerNumber = i; // Tell completion callback which seat we reserved.
+	      return playerList;
+	    }
 
-	roomsRef.on("value", function(snapshot) {
-	  snapshot.forEach(function(childSnapshot) {
-
-	  	console.log(childSnapshot.key);
-	  	
-			if (childSnapshot.val().seat == "empty") {
-				console.log("empty seat");
-			} else {
-				console.log("seats are full");
-			}
-  	});
-	});
-
-	var initApp = function() {
-  };
-
-  window.addEventListener('load', function() {
-    initApp();
-  });
-
-	//Function to capitalize usernames
-	function capitalize(name) {
-	  return name.charAt(0).toUpperCase() + name.slice(1);
+	    // Abort transaction and tell completion callback we failed to join.
+	    myPlayerNumber = null;
+	  }, function (error, committed) {
+	    // Transaction has completed.  Check if it succeeded or we were already in
+	    // the game and so it was aborted.
+	    if (committed || alreadyInGame) {
+	      playGame(myPlayerNumber, userId, !alreadyInGame, gameRef);
+	    } else {
+	      alert('Game is full.  Can\'t join. :-(');
+	    }
+	  });
 	}
 
 });
