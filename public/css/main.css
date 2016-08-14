@@ -22,10 +22,24 @@ body {
   border-radius: 11px;
   text-align: center;
   background-color: #f5f5f5;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
 }
 
-.player-card:nth-child(1) {
+#first-player {
   background-image: url("../img/pokemon_1.png");
+}
+
+#second-player {
+  background-image: url("../img/pokemon_2.png");
+}
+
+#third-player {
+  background-image: url("../img/pokemon_3.png");
+}
+
+#fourth-player {
+  background-image: url("../img/pokemon_4.png");
 }
 
 

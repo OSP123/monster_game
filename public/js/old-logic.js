@@ -3,14 +3,7 @@ $( document ).ready(function() {
 	var playersRef = db.ref('/players');
 	var roomsRef = db.ref('/channels');
 	var profiles = db.ref('/profiles');
-	//USERNAME LISTENERS
-	//Start button - takes username and tries to get user in game
-	// $('#start').click(function() {
-	//   if ($('#username').val() !== "") {
-	//     username = capitalize($('#username').val());
-	//     getInGame();
-	//   }
-	// });
+	var amOnline = db.ref('/.info/connected');
 
 	function addRoomAndEmptySeats() {
 
@@ -18,7 +11,8 @@ $( document ).ready(function() {
 	  	seat1: "empty",
 	  	seat2: "empty",
 	  	seat3: "empty",
-	  	seat4: "empty"
+	  	seat4: "empty",
+	  	locked: false
 	  }
 
 	  roomsRef.push(newRoom);
@@ -36,76 +30,42 @@ $( document ).ready(function() {
         "</div>");
 	}
 
-	// function playerExists(uid) {
-		
-	// 	var result = false;
+  // Michael's example of code working
+  function checkIfPlayerExists(uid) {
+  	return playersRef.once("value")
+  		.then(function(snapshot) {
+  			var result = false;
+  			snapshot.forEach(function(childSnapshot) {
+	  			if (childSnapshot.val().uid === uid) {
+					console.log("We found it!");
+					// currentPlayer = childSnapshot.val();
+					result = true;
+				}
+			});
+			return result;
+  		});
+  }
 
-		// playersRef.once("value", function(snapshot) {
-		//   snapshot.forEach(function(childSnapshot) {
-		// 		if (childSnapshot.val().uid == uid) {
-		// 			console.log("Player already exists");
-		// 			result = true;
-		// 		}
-	 //  	});
-		// });
-
-	// 	return result;
-	// }
-
-	// function findPlayer(uid) {
-	// 		if (playersRef.child(uid)) {
-
-	// 			console.log("Found it!");
-
-	// 			return playersRef.child(uid).once('value').then(function(snapshot) {
-
-	// 	    	return snapshot.val();
-
-	// 			});
-
-	// 		} else {
-
-	// 			console.log("not found");
-
-	// 			return false;
-	// 		}
-	//   };
-
-	  // Michael's example of code working
-	  function checkIfPlayerExists(uid) {
-	  	return playersRef.once("value")
-	  		.then(function(snapshot) {
-	  			var result = false;
-	  			snapshot.forEach(function(childSnapshot) {
-		  			if (childSnapshot.val().uid === uid) {
-						console.log("We found it!");
-						// currentPlayer = childSnapshot.val();
-						result = true;
-					}
+  function checkForSeat(){
+		return roomsRef.once("value")
+		 	.then(function(snapshot) {
+		 		var seatExists = false;
+		  	snapshot.forEach(function(childSnapshot) {
+		  		childSnapshot.forEach(function(babySnap) {
+		  			if (babySnap.val() == "empty") {
+							console.log("empty seat");
+							// babySnap.val() = 
+						} else {
+							console.log("seats are full");
+							addRoomAndEmptySeats();
+						}
+		  		})
 				});
-				return result;
-	  		});
-	  }
+				return seatExists;
+			});
+  }
 
-	  function checkForSeat(){
-			return roomsRef.once("value")
-			 	.then(function(snapshot) {
-			 		var seatExists = false;
-			  	snapshot.forEach(function(childSnapshot) {
-			  		childSnapshot.forEach(function(babySnap) {
-			  			if (babySnap.val() == "empty") {
-								console.log("empty seat");
-								seatExists = true;
-							} else {
-								console.log("seats are full");
-							}
-			  		})
-					});
-					return seatExists;
-				});
-	  }
-
-	function createPlayer(uid, displayName) {
+	function createPlayer(uid, displayName, playerExists) {
 
 	  var playerData = {
 	    name: displayName,
@@ -130,12 +90,7 @@ $( document ).ready(function() {
 	  var updates = {};
 	  updates['/players/' + newPlayerKey] = playerData;
 
-	  return db.ref().update(updates);
-	}
-
-		//Function to capitalize usernames
-	function capitalize(name) {
-	  return name.charAt(0).toUpperCase() + name.slice(1);
+	  return db.ref().update(updates); 
 	}
 
 	var initApp = function() {
@@ -143,15 +98,30 @@ $( document ).ready(function() {
 	    if (user) {
 	      // User is signed in.
 
-	      user.getToken().then(function(accessToken) {
+	      var userRef = db.ref('/presence/' + user.uid);
 
+	      // checks to see if the user is logged in.
+      	amOnline.on('value', function(snapshot) {
+				  if (snapshot.val()) {
+				  	// Preferably all users see that user has been disconnected and ill come back.
+				    userRef.onDisconnect().set("☆ offline");
+
+				    userRef.set(true);
+				  }
+				});
+
+	      user.getToken().then(function(accessToken) {
+	      	
+	      	// Display log in name
 	      	signedInDisplay(user.displayName);
 				  
+				  // Check to see if player already created
 				  checkIfPlayerExists(user.uid)
 				  	.then(function(result){
 
 				  		var playerCreated = false;
 
+				  		// If player doesn't exist, create the player, otherwise mention that player is already in the system
 				  		if (result == false) {
 				  			createPlayer(user.uid, user.displayName);
 				  			playerCreated = true;
@@ -163,7 +133,17 @@ $( document ).ready(function() {
 				  		return playerCreated;
 
 				  	}).then(function(result){
-				  			return checkForSeat();
+				  		// The result is if player was created or not. We could use this if we want to, but not necessary.
+				  		console.log(result);
+				  			// return function(){
+				  			// 	doneChecking = false;
+				  			// 	while (doneChecking == false) {
+				  			// 		if (checkForSeat() == true){
+				  			// 			doneChecking = true;
+				  			// 		}
+				  			// 	}
+				  			// 	return doneChecking;
+				  			// }
 				  	}).then(function(result){
 				  			console.log(result);
 				  	});
