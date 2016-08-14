@@ -1,4 +1,42 @@
 $( document ).ready(function() {
+	
+
+
+	  // //update status to be working
+	  // var checker = checkIfPlayerExists("foo");
+	  // checker.then(function() {
+	  // 	//update status to be idle
+	  // });
+
+	  // checker.then(outputStatus).then(function(success) {
+	  // 	return checkIfPlayerExists("Bar");
+	  // }).then(...);
+
+	  // function outputStatus(x) {
+	  // 	console.log(JSON.stringify(x));
+	  // 	return x;
+	  // }
+
+
+	// function createPlayer(uid, displayName) {
+	//     var p1 = new Promise(
+	//         function(resolve, reject) {
+	//             // resolve(findPlayer(uid));
+	//         }
+	//     );
+	//     p1.then(
+	//         // Log the fulfillment value
+	//         function(val) {
+	//      				console.log(val);
+	//         })
+	//     .catch(
+	//         // Log the rejection reason
+	//         function(reason) {
+	//             console.log('Handle rejected promise ('+reason+') here.');
+	//         });
+	// }
+
+
 	var db = firebase.database();
 	var playersRef = db.ref('/players');
 	var roomsRef = db.ref('/channels');
