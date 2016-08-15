@@ -1,4 +1,6 @@
 $( document ).ready(function() {
+
+
 	// Set up refs for Database endpoints
 	var db = firebase.database();
 	var playersRef = db.ref('/players');
@@ -66,20 +68,12 @@ $( document ).ready(function() {
 		return roomsRef.once("value")
 		 	.then(function(snapshot) {
 
-		 		var objData = {};
+		 		var objData = thePlayerObject;
 		 		var dataHasBeenSet = false;
-		 		
 
-		 		console.log("Is this being passed into seatCheckAndRoomUpdate",thePlayerObject);
-		 		
 		 		// look through each room and find one that is empty
 		  	snapshot.forEach(function(childSnapshot) {
 		  		childSnapshot.forEach(function(roomProp) {
-		  			// Need to figure out a way to the check if the data has already been added
-
-		  			var roomKey = childSnapshot.key;
-
-		  			console.log("Room Key", roomKey);
 		  			
 			  			if (roomProp.val() == "empty" && thePlayerObject.room == null) {
 
@@ -103,16 +97,12 @@ $( document ).ready(function() {
 							  	childSnapshot.ref.update({ 
 							  		numPlayers: numberOfPlayers + 1 
 							  	});
-							  }
-
-							  
-
-							  // Add player to Room
-							  
-							  
-							  if (numberOfPlayers == 4) {
+							  // Make room locked if there are a total of 4 players
+							  } else if (numberOfPlayers == 4) {
 							  	childSnapshot.ref.update({ locked: true });
 							  }
+
+							  
 
 							 	objData.key = childSnapshot.key;
 							 	dataHasBeenSet = true;
@@ -218,13 +208,11 @@ $( document ).ready(function() {
 				  		return player;
 
 				  	}).then(function(playerObject){
-				  		console.log("Hopefully, player key", playerObject);
 				  		// I want the result to be the player that was created
-				  		// addRoomAndEmptySeats();
 				  		return seatCheckAndRoomUpdate(user.uid, playerObject);
 
 				  	}).then(function(result){
-				  			// console.log(result);
+				  			console.log("result from seatCheckAndRoomUpdate", result);
 				  	});
 	    });
 	    } else {
