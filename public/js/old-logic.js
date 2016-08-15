@@ -49,71 +49,79 @@ $( document ).ready(function() {
   function checkIfPlayerExists(uid) {
   	return playersRef.once("value")
   		.then(function(snapshot) {
-  			var result = false;
+  			var result = [false];
   			snapshot.forEach(function(childSnapshot) {
 	  			if (childSnapshot.val().uid === uid) {
 					console.log("We found it!");
-					result = true;
+					result[0] = true;
+					result.push(childSnapshot.val());
 				}
 			});
 			return result;
   		});
   }
 
-  function seatCheckAndRoomUpdate(uid){
+  function seatCheckAndRoomUpdate(uid, thePlayerObject){
+
 		return roomsRef.once("value")
 		 	.then(function(snapshot) {
 
 		 		var objData = {};
 		 		var dataHasBeenSet = false;
+		 		
 
+		 		console.log("Is this being passed into seatCheckAndRoomUpdate",thePlayerObject);
+		 		
 		 		// look through each room and find one that is empty
 		  	snapshot.forEach(function(childSnapshot) {
-		  		childSnapshot.forEach(function(babySnap) {
-		  			// Need to figure out a way to check data in player to make sure we don't add that same player again.
-		  			if (babySnap.val() == "empty") {
+		  		childSnapshot.forEach(function(roomProp) {
+		  			// Need to figure out a way to the check if the data has already been added
 
-							console.log("empty seat");
+		  			var roomKey = childSnapshot.key;
 
-							var roomKey = childSnapshot.key;
+		  			console.log("Room Key", roomKey);
+		  			
+			  			if (roomProp.val() == "empty" && thePlayerObject.room == null) {
 
-							var numberOfPlayers = childSnapshot.val().numPlayers;
-						  // Now simply find the parent and return the name.
-						  if (numberOfPlayers < 4) {
-						  	childSnapshot.ref.update({ 
-						  		numPlayers: numberOfPlayers + 1 
-						  	});
-						  }
+								// find Player and assign room key to the room property
+							  // Make this more efficient by putting code into a function
+							  playersRef.once('value', function(snapshot) {
+							  	snapshot.forEach(function(childSnapshot) {
+							  		if (childSnapshot.val().uid === uid) {
+							  			childSnapshot.ref.update({ 
+									  		room: roomKey 
+									  	});
+							  		}
+							  	})
+							  }).then(function(result){
+							  	roomProp.ref.set(uid);
+							  })
 
-						  // find Player and assign room key to the room property
-						  // Make this more efficient by putting code into a function
-						  playersRef.once('value', function(snapshot) {
-						  	snapshot.forEach(function(childSnapshot) {
-						  		if (childSnapshot.val().uid === uid) {
-						  			childSnapshot.ref.update({ 
-								  		room: roomKey 
-								  	});
-						  		}
-						  	})
-						  }).then(function(result){
-						  	// babySnap.ref.update(uid);
-						  	babySnap.ref.set(uid);
-						  })
+								var numberOfPlayers = childSnapshot.val().numPlayers;
+							  // Now simply find the parent and return the name.
+							  if (numberOfPlayers < 4) {
+							  	childSnapshot.ref.update({ 
+							  		numPlayers: numberOfPlayers + 1 
+							  	});
+							  }
 
-						  // Add player to Room
-						  
-						  
-						  if (numberOfPlayers == 4) {
-						  	childSnapshot.ref.update({ locked: true });
-						  }
+							  
 
-						 	objData.key = childSnapshot.key;
-						 	dataHasBeenSet = true;
-						}
-						if (dataHasBeenSet) {
-		  				// will exit out of loop
-		  				return true;
-		  			}
+							  // Add player to Room
+							  
+							  
+							  if (numberOfPlayers == 4) {
+							  	childSnapshot.ref.update({ locked: true });
+							  }
+
+							 	objData.key = childSnapshot.key;
+							 	dataHasBeenSet = true;
+							}
+							if (dataHasBeenSet) {
+			  				// will exit out of loop
+			  				return true;
+			  			}
+		  			// })
 		  		})
 				});
 				return objData;
@@ -160,7 +168,9 @@ $( document ).ready(function() {
 	  var updates = {};
 	  updates['/players/' + newPlayerKey] = playerData;
 
-	  return db.ref().update(updates); 
+	  db.ref().update(updates);
+
+	  return playerData;
 	}
 
 	var initApp = function() {
@@ -184,29 +194,34 @@ $( document ).ready(function() {
 	      	
 	      	// Display log in name
 	      	signedInDisplay(user.displayName);
+
+	      	// for (var i = 0; i < 100; i++) {
+	      	// 	addRoomAndEmptySeats();
+	      	// }
+	      	
 				  
 				  // Check to see if player already created
 				  checkIfPlayerExists(user.uid)
-				  	.then(function(result){
+				  	.then(function(arrayOfBooleanAndPlayer){
 
-				  		var playerCreated = false;
-
+				  		var player;
 				  		// If player doesn't exist, create the player, otherwise mention that player is already in the system
-				  		if (result == false) {
-				  			var player = createPlayer(user.uid, user.displayName);
+				  		if (arrayOfBooleanAndPlayer[0] == false) {
+				  			player = createPlayer(user.uid, user.displayName);
 				  			console.log(player);
-				  			playerCreated = true;
-				  		} else if (result) {
-				  			console.log("You're already in the system");
-				  			playerCreated = false;
+				  		} else if (arrayOfBooleanAndPlayer[0]) {
+				  			player = arrayOfBooleanAndPlayer[1];
 				  		}
 
-				  		return playerCreated;
+				  		console.log(player);
 
-				  	}).then(function(result){
-				  		// The result is if player was created or not. We could use this if we want to, but not necessary.
+				  		return player;
+
+				  	}).then(function(playerObject){
+				  		console.log("Hopefully, player key", playerObject);
+				  		// I want the result to be the player that was created
 				  		// addRoomAndEmptySeats();
-				  		return seatCheckAndRoomUpdate(user.uid);
+				  		return seatCheckAndRoomUpdate(user.uid, playerObject);
 
 				  	}).then(function(result){
 				  			// console.log(result);
