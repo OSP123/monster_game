@@ -67,29 +67,46 @@ $( document ).ready(function() {
 		 		var objData = {};
 		 		var dataHasBeenSet = false;
 
+		 		// look through each room and find one that is empty
 		  	snapshot.forEach(function(childSnapshot) {
 		  		childSnapshot.forEach(function(babySnap) {
 		  			if (babySnap.val() == "empty") {
 
 							console.log("empty seat");
 
+							var roomKey = childSnapshot.key;
+
 							var numberOfPlayers = childSnapshot.val().numPlayers;
 						  // Now simply find the parent and return the name.
 						  if (numberOfPlayers < 4) {
-						  	childSnapshot.ref.update({ numPlayers: numberOfPlayers + 1 });
+						  	childSnapshot.ref.update({ 
+						  		numPlayers: numberOfPlayers + 1 
+						  	});
 						  }
 
-						  findPlayer(uid).then(function(player){
-						  	player
-						  });
+						  // find Player and assign room key to the room property
+						  // Make this more efficient by putting code into a function
+						  playersRef.once('value', function(snapshot) {
+						  	snapshot.forEach(function(childSnapshot) {
+						  		if (childSnapshot.val().uid === uid) {
+						  			childSnapshot.ref.update({ 
+								  		room: roomKey 
+								  	});
+						  		}
+						  	})
+						  }).then(function(result){
+						  	// babySnap.ref.update(uid);
+						  	babySnap.ref.set(uid);
+						  })
 
+						  // Add player to Room
+						  
+						  
 						  if (numberOfPlayers == 4) {
 						  	childSnapshot.ref.update({ locked: true });
 						  }
 
-						 	console.log(childSnapshot.key);
 						 	objData.key = childSnapshot.key;
-						 	console.log("meow");
 						 	dataHasBeenSet = true;
 						}
 						if (dataHasBeenSet) {
