@@ -70,6 +70,7 @@ $( document ).ready(function() {
 		 		// look through each room and find one that is empty
 		  	snapshot.forEach(function(childSnapshot) {
 		  		childSnapshot.forEach(function(babySnap) {
+		  			// Need to figure out a way to check data in player to make sure we don't add that same player again.
 		  			if (babySnap.val() == "empty") {
 
 							console.log("empty seat");
