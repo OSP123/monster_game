@@ -31,7 +31,21 @@ $( document ).ready(function() {
         "</div>");
 	}
 
-  // Michael's example of code working
+	// Note, this returns a promise
+	function findPlayer(uid) {
+  	return playersRef.once("value")
+  		.then(function(snapshot) {
+  			var result = false;
+  			snapshot.forEach(function(childSnapshot) {
+	  			if (childSnapshot.val().uid === uid) {
+					result = childSnapshot.val();
+				}
+			});
+			return result;
+  		});
+  }
+
+  // This will return a promise
   function checkIfPlayerExists(uid) {
   	return playersRef.once("value")
   		.then(function(snapshot) {
@@ -46,7 +60,7 @@ $( document ).ready(function() {
   		});
   }
 
-  function seatCheckAndRoomUpdate(){
+  function seatCheckAndRoomUpdate(uid){
 		return roomsRef.once("value")
 		 	.then(function(snapshot) {
 
@@ -56,18 +70,24 @@ $( document ).ready(function() {
 		  	snapshot.forEach(function(childSnapshot) {
 		  		childSnapshot.forEach(function(babySnap) {
 		  			if (babySnap.val() == "empty") {
+
 							console.log("empty seat");
+
 							var numberOfPlayers = childSnapshot.val().numPlayers;
 						  // Now simply find the parent and return the name.
 						  if (numberOfPlayers < 4) {
-						  	childSnapshot.ref('/numPlayers/').update(numberOfPlayers + 1
-						    );
-						  } 
+						  	childSnapshot.ref.update({ numPlayers: numberOfPlayers + 1 });
+						  }
+
+						  findPlayer(uid).then(function(player){
+						  	player
+						  });
 
 						  if (numberOfPlayers == 4) {
-						  	childSnapshot.ref('locked/').set(true);
+						  	childSnapshot.ref.update({ locked: true });
 						  }
-						 	// console.log(childSnapshot.key);
+
+						 	console.log(childSnapshot.key);
 						 	objData.key = childSnapshot.key;
 						 	console.log("meow");
 						 	dataHasBeenSet = true;
@@ -155,7 +175,8 @@ $( document ).ready(function() {
 
 				  		// If player doesn't exist, create the player, otherwise mention that player is already in the system
 				  		if (result == false) {
-				  			createPlayer(user.uid, user.displayName);
+				  			var player = createPlayer(user.uid, user.displayName);
+				  			console.log(player);
 				  			playerCreated = true;
 				  		} else if (result) {
 				  			console.log("You're already in the system");
@@ -167,17 +188,8 @@ $( document ).ready(function() {
 				  	}).then(function(result){
 				  		// The result is if player was created or not. We could use this if we want to, but not necessary.
 				  		// addRoomAndEmptySeats();
-				  		return seatCheckAndRoomUpdate();
+				  		return seatCheckAndRoomUpdate(user.uid);
 
-				  			// return function(){
-				  			// 	doneChecking = false;
-				  			// 	while (doneChecking == false) {
-				  			// 		if (checkForSeat() == true){
-				  			// 			doneChecking = true;
-				  			// 		}
-				  			// 	}
-				  			// 	return doneChecking;
-				  			// }
 				  	}).then(function(result){
 				  			// console.log(result);
 				  	});
