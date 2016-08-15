@@ -1,8 +1,8 @@
 $( document ).ready(function() {
+	// Set up refs for Database endpoints
 	var db = firebase.database();
 	var playersRef = db.ref('/players');
 	var roomsRef = db.ref('/channels');
-	var profiles = db.ref('/profiles');
 	var amOnline = db.ref('/.info/connected');
 
 	function addRoomAndEmptySeats() {
@@ -12,7 +12,8 @@ $( document ).ready(function() {
 	  	seat2: "empty",
 	  	seat3: "empty",
 	  	seat4: "empty",
-	  	locked: false
+	  	locked: false,
+	  	numPlayers: 0
 	  }
 
 	  roomsRef.push(newRoom);
@@ -38,7 +39,6 @@ $( document ).ready(function() {
   			snapshot.forEach(function(childSnapshot) {
 	  			if (childSnapshot.val().uid === uid) {
 					console.log("We found it!");
-					// currentPlayer = childSnapshot.val();
 					result = true;
 				}
 			});
@@ -46,23 +46,55 @@ $( document ).ready(function() {
   		});
   }
 
-  function checkForSeat(){
+  function seatCheckAndRoomUpdate(){
 		return roomsRef.once("value")
 		 	.then(function(snapshot) {
-		 		var seatExists = false;
+
+		 		var objData = {};
+		 		var dataHasBeenSet = false;
+
 		  	snapshot.forEach(function(childSnapshot) {
 		  		childSnapshot.forEach(function(babySnap) {
 		  			if (babySnap.val() == "empty") {
 							console.log("empty seat");
-							// babySnap.val() = 
-						} else {
-							console.log("seats are full");
-							addRoomAndEmptySeats();
+							var numberOfPlayers = childSnapshot.val().numPlayers;
+						  // Now simply find the parent and return the name.
+						  if (numberOfPlayers < 4) {
+						  	childSnapshot.ref('/numPlayers/').update(numberOfPlayers + 1
+						    );
+						  } 
+
+						  if (numberOfPlayers == 4) {
+						  	childSnapshot.ref('locked/').set(true);
+						  }
+						 	// console.log(childSnapshot.key);
+						 	objData.key = childSnapshot.key;
+						 	console.log("meow");
+						 	dataHasBeenSet = true;
 						}
+						if (dataHasBeenSet) {
+		  				// will exit out of loop
+		  				return true;
+		  			}
 		  		})
 				});
-				return seatExists;
+				return objData;
 			});
+  }
+
+  function createRoom(uid) {
+  	return playersRef.once("value")
+  		.then(function(snapshot) {
+  			var result = false;
+  			snapshot.forEach(function(childSnapshot) {
+	  			if (childSnapshot.val().uid === uid) {
+					console.log("We found it!");
+					// currentPlayer = childSnapshot.val();
+					result = true;
+				}
+			});
+			return result;
+  		});
   }
 
 	function createPlayer(uid, displayName, playerExists) {
@@ -134,7 +166,9 @@ $( document ).ready(function() {
 
 				  	}).then(function(result){
 				  		// The result is if player was created or not. We could use this if we want to, but not necessary.
-				  		console.log(result);
+				  		// addRoomAndEmptySeats();
+				  		return seatCheckAndRoomUpdate();
+
 				  			// return function(){
 				  			// 	doneChecking = false;
 				  			// 	while (doneChecking == false) {
@@ -145,7 +179,7 @@ $( document ).ready(function() {
 				  			// 	return doneChecking;
 				  			// }
 				  	}).then(function(result){
-				  			console.log(result);
+				  			// console.log(result);
 				  	});
 	    });
 	    } else {
