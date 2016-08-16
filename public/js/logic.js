@@ -77,6 +77,8 @@ $( document ).ready(function() {
 		  			
 			  			if (roomProp.val() == "empty" && thePlayerObject.room == null) {
 
+			  				var roomKey = childSnapshot.key;
+
 								// find Player and assign room key to the room property
 							  // Make this more efficient by putting code into a function
 							  playersRef.once('value', function(snapshot) {
@@ -194,18 +196,18 @@ $( document ).ready(function() {
 				  checkIfPlayerExists(user.uid)
 				  	.then(function(arrayOfBooleanAndPlayer){
 
-				  		var player;
+				  		var playerObj;
+
 				  		// If player doesn't exist, create the player, otherwise mention that player is already in the system
 				  		if (arrayOfBooleanAndPlayer[0] == false) {
-				  			player = createPlayer(user.uid, user.displayName);
-				  			console.log(player);
+				  			playerObj = createPlayer(user.uid, user.displayName);
 				  		} else if (arrayOfBooleanAndPlayer[0]) {
-				  			player = arrayOfBooleanAndPlayer[1];
+				  			playerObj = arrayOfBooleanAndPlayer[1];
 				  		}
 
-				  		console.log(player);
+				  		console.log(playerObj);
 
-				  		return player;
+				  		return playerObj;
 
 				  	}).then(function(playerObject){
 				  		// I want the result to be the player that was created
