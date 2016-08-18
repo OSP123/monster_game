@@ -39,7 +39,7 @@
     </nav>
     <div id="main_container" class="container">
     <div class="wrapper">
-        <form class="form-signin">       
+        <div class="form-signin">       
           <h2 class="form-signin-heading">Please login</h2>
           <input id="email_input" type="text" class="form-control" name="username" placeholder="Email Address" required="" autofocus="" />
           <input id="password_input" type="password" class="form-control" name="password" placeholder="Password" required=""/>      
@@ -47,9 +47,11 @@
             <input type="checkbox" value="remember-me" id="rememberMe" name="rememberMe"> Remember me
           </label>
           <button id="btnSignIn" class="btn btn-lg btn-primary btn-block">Login</button>   
-          <button id="btnSignUp" class="btn btn-lg btn-primary btn-block">Sign Up</button>  
+          <button id="btnSignUp" class="btn btn-lg btn-primary btn-block">Sign Up</button>
+        </div>
+        <div id="sign_out_btn_container">
           <button id="btnSignOut" class="btn btn-lg btn-primary btn-block hide">Log Out</button>  
-        </form>
+        </div>
     </div>
 
       <footer>
@@ -72,8 +74,6 @@
         <script src="js/creds.js"></script>
 
         <script src="js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
-
-       
 
         <script src="js/game-logic.js"></script>
 

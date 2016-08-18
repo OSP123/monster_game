@@ -25,13 +25,6 @@ $(document).on('click', '.chooseCharacter', function() {
   
 });
 
-function signedInDisplay(displayName) {
-	$(".form-signin-heading").html(displayName + " is signed in");
-}
-
-function signedOutDisplay(theUser) {
-	$(".form-signin-heading").html("You have signed out");
-}
 
 // Note, this returns a promise
 function findPlayer(uid) {
@@ -73,7 +66,7 @@ function chooseCharacter(uid, playerObj) {
 }
 
 function seatCheckAndRoomUpdate(uid, thePlayerObject){
-
+	console.log("Is seat check even running?");
 	return roomsRef.once("value")
 	 	.then(function(snapshot) {
 
@@ -175,8 +168,8 @@ function createPlayer(uid, displayName, playerExists) {
 }
 
 
-function afterAuth(user) {
-	var userRef = db.ref('/presence/' + user.uid);
+function afterAuth(uid, name) {
+	var userRef = db.ref('/presence/' + uid);
 
   // checks to see if the user is logged in.
 	amOnline.on('value', function(snapshot) {
@@ -187,14 +180,14 @@ function afterAuth(user) {
 	    userRef.set(true);
 
 	    // Check to see if player already created
-		  checkIfPlayerExists(user.uid)
+		  checkIfPlayerExists(uid)
 		  	.then(function(arrayOfBooleanAndPlayer){
 
 		  		var playerObj;
 
 		  		// If player doesn't exist, create the player, otherwise mention that player is already in the system
 		  		if (arrayOfBooleanAndPlayer[0] == false) {
-		  			playerObj = createPlayer(user.uid, user.displayName);
+		  			playerObj = createPlayer(uid, name);
 		  		} else if (arrayOfBooleanAndPlayer[0]) {
 		  			playerObj = arrayOfBooleanAndPlayer[1];
 		  		}
@@ -206,13 +199,15 @@ function afterAuth(user) {
 		  	}).then(function(playerObject){
 		  		// I want the result to be the player that was created
 		  		if (sessionStorage.getItem("characterScreenLoaded") !== 'true') {
-		  			return seatCheckAndRoomUpdate(user.uid, playerObject);
-		  		} else if ((sessionStorage.getItem("characterScreenLoaded") === 'true') && location.href ) {
+		  			return seatCheckAndRoomUpdate(uid, playerObject);
+		  		// } else if ((sessionStorage.getItem("characterScreenLoaded") === 'true') && location.href ) {
 
 		  		} else {
 		  			// be sure to return the playerObject so that it gets passed to the next function
-		  			chooseCharacter(user.uid, playerObject);
+		  			chooseCharacter(uid, playerObject);
 		  		}
+
+		  		
 		  	}).then(function(result){
 		  			console.log("result from seatCheckAndRoomUpdate", result);
 		  	});
@@ -220,10 +215,6 @@ function afterAuth(user) {
 	});
 }
 
-
-var initApp = function() {
-	
-};
 
 // window.addEventListener('load', function() {
 // 	initApp();
