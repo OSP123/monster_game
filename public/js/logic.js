@@ -95,20 +95,18 @@ function seatCheckAndRoomUpdate(uid, thePlayerObject){
 						  	})
 						  }).then(function(result){
 						  	roomProp.ref.set(uid);
-						  })
-							
-						  // Now simply find the parent and return the name.
-						  if (numberOfPlayers < 4) {
-						  	childSnapshot.ref.update({ 
-						  		numPlayers: numberOfPlayers + 1 
-						  	});
-						  // Make room locked if there are a total of 4 players
-						  } else if (numberOfPlayers == 4) {
+						  }).then(function(result){
+						  	if (numberOfPlayers < 4) {
+							  	childSnapshot.ref.update({ 
+							  		numPlayers: numberOfPlayers + 1 
+							  	});
+						  	} else if (numberOfPlayers == 4) {
 						  	childSnapshot.ref.update({ locked: true });
-						  }
+						  	}
 
-						  chooseCharacterPageLoad();
-						  
+						  	chooseCharacterPageLoad();
+						  })
+				
 						 	objData.key = childSnapshot.key;
 						 	dataHasBeenSet = true;
 						}
