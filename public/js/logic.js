@@ -6,6 +6,7 @@ $( document ).ready(function() {
 	var playersRef = db.ref('/players');
 	var roomsRef = db.ref('/channels');
 	var amOnline = db.ref('/.info/connected');
+	var playerChoiceHTML = false;
 
 	function addRoomAndEmptySeats() {
 
@@ -20,6 +21,11 @@ $( document ).ready(function() {
 
 	  roomsRef.push(newRoom);
 	}
+
+	$(document).on('click', '.chooseCharacter', function() {
+
+	  
+	});
 
 	function signedInDisplay(displayName) {
 		$("#firebaseui-auth-container").hide();
@@ -60,7 +66,16 @@ $( document ).ready(function() {
 				}
 			});
 			return result;
-  		});
+  	});
+  }
+
+  function chooseCharacterPageLoad() {
+  	sessionStorage.setItem("characterScreenLoaded", "true");
+		window.location = "../chooseCharacter.html";
+  }
+
+  function chooseCharacter(uid, playerObj) {
+  		// Do all the stuff for choosing a character. You should now be on choose character page
   }
 
   function seatCheckAndRoomUpdate(uid, thePlayerObject){
@@ -68,7 +83,7 @@ $( document ).ready(function() {
 		return roomsRef.once("value")
 		 	.then(function(snapshot) {
 
-		 		var objData = thePlayerObject;
+		 		var arrayOfData = [thePlayerObject];
 		 		var dataHasBeenSet = false;
 
 		 		// look through each room and find one that is empty
@@ -78,6 +93,8 @@ $( document ).ready(function() {
 			  			if (roomProp.val() == "empty" && thePlayerObject.room == null) {
 
 			  				var roomKey = childSnapshot.key;
+			  				var nameOfRoom = roomProp.key;
+			  				var numberOfPlayers = childSnapshot.val().numPlayers;
 
 								// find Player and assign room key to the room property
 							  // Make this more efficient by putting code into a function
@@ -92,8 +109,7 @@ $( document ).ready(function() {
 							  }).then(function(result){
 							  	roomProp.ref.set(uid);
 							  })
-
-								var numberOfPlayers = childSnapshot.val().numPlayers;
+								
 							  // Now simply find the parent and return the name.
 							  if (numberOfPlayers < 4) {
 							  	childSnapshot.ref.update({ 
@@ -104,8 +120,8 @@ $( document ).ready(function() {
 							  	childSnapshot.ref.update({ locked: true });
 							  }
 
+							  chooseCharacterPageLoad();
 							  
-
 							 	objData.key = childSnapshot.key;
 							 	dataHasBeenSet = true;
 							}
@@ -113,7 +129,6 @@ $( document ).ready(function() {
 			  				// will exit out of loop
 			  				return true;
 			  			}
-		  			// })
 		  		})
 				});
 				return objData;
@@ -170,19 +185,50 @@ $( document ).ready(function() {
 	    if (user) {
 	      // User is signed in.
 
-	      var userRef = db.ref('/presence/' + user.uid);
-
-	      // checks to see if the user is logged in.
-      	amOnline.on('value', function(snapshot) {
-				  if (snapshot.val()) {
-				  	// Preferably all users see that user has been disconnected and ill come back.
-				    userRef.onDisconnect().set("☆ offline");
-
-				    userRef.set(true);
-				  }
-				});
-
 	      user.getToken().then(function(accessToken) {
+
+	      	var userRef = db.ref('/presence/' + user.uid);
+
+		      // checks to see if the user is logged in.
+	      	amOnline.on('value', function(snapshot) {
+					  if (snapshot.val()) {
+					  	// Preferably all users see that user has been disconnected and ill come back.
+					    userRef.onDisconnect().remove();
+
+					    userRef.set(true);
+
+					    // Check to see if player already created
+						  checkIfPlayerExists(user.uid)
+						  	.then(function(arrayOfBooleanAndPlayer){
+
+						  		var playerObj;
+
+						  		// If player doesn't exist, create the player, otherwise mention that player is already in the system
+						  		if (arrayOfBooleanAndPlayer[0] == false) {
+						  			playerObj = createPlayer(user.uid, user.displayName);
+						  		} else if (arrayOfBooleanAndPlayer[0]) {
+						  			playerObj = arrayOfBooleanAndPlayer[1];
+						  		}
+
+						  		console.log(playerObj);
+
+						  		return playerObj;
+
+						  	}).then(function(playerObject){
+						  		// I want the result to be the player that was created
+						  		if (sessionStorage.getItem("characterScreenLoaded") !== 'true') {
+						  			return seatCheckAndRoomUpdate(user.uid, playerObject);
+						  		} else if () {
+
+						  		} else {
+						  			// be sure to return the playerObject so that it gets passed to the next function
+						  			chooseCharacter(user.uid, playerObject);
+						  		}
+						  	}).then(function(result){
+						  			console.log("result from seatCheckAndRoomUpdate", result);
+						  	});
+					  }
+					});
 	      	
 	      	// Display log in name
 	      	signedInDisplay(user.displayName);
@@ -190,32 +236,6 @@ $( document ).ready(function() {
 	      	// for (var i = 0; i < 100; i++) {
 	      	// 	addRoomAndEmptySeats();
 	      	// }
-	      	
-				  
-				  // Check to see if player already created
-				  checkIfPlayerExists(user.uid)
-				  	.then(function(arrayOfBooleanAndPlayer){
-
-				  		var playerObj;
-
-				  		// If player doesn't exist, create the player, otherwise mention that player is already in the system
-				  		if (arrayOfBooleanAndPlayer[0] == false) {
-				  			playerObj = createPlayer(user.uid, user.displayName);
-				  		} else if (arrayOfBooleanAndPlayer[0]) {
-				  			playerObj = arrayOfBooleanAndPlayer[1];
-				  		}
-
-				  		console.log(playerObj);
-
-				  		return playerObj;
-
-				  	}).then(function(playerObject){
-				  		// I want the result to be the player that was created
-				  		return seatCheckAndRoomUpdate(user.uid, playerObject);
-
-				  	}).then(function(result){
-				  			console.log("result from seatCheckAndRoomUpdate", result);
-				  	});
 	    });
 	    } else {
 	      // User is signed out.

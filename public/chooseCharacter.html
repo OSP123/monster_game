@@ -1,4 +1,4 @@
-<!doctype html>
+ <!doctype html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9" lang=""> <![endif]-->
@@ -30,10 +30,10 @@
 
         <script src="js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
     </head>
-    <body>
-        <!--[if lt IE 8]>
-            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
+    <body> 
+    <!--[if lt IE 8]>
+        <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="container">
         <div class="navbar-header">
@@ -50,11 +50,34 @@
       </div>
     </nav>
     <div id="main_container" class="container">
-      <!-- Example row of columns -->
+      <div class="row">
+        <div class="col-sm-3 col-xs-12">
+           <div id="first-player" data-seat="seat1" class="col-md-12 player-card">
+              <p>Player One</p>
+           </div>
+        </div>
+        <div class="col-sm-3 col-xs-12">
+           <div id="second-player" data-seat="seat2" class="col-md-12 player-card">
+              <p>Player Two</p>
+           </div>
+        </div>
+        <div class="col-sm-3 col-xs-12">
+           <div id="third-player" data-seat="seat3" class="col-md-12 player-card">
+              <p>Player Three</p>
+           </div>
+        </div>
+        <div class="col-sm-3 col-xs-12">
+           <div id="fourth-player" data-seat="seat4" class="col-md-12 player-card">
+              <p>Player Four</p>
+           </div>
+        </div>
+      </div>
+
       <div id="firebase_authentication" class="row">
         <div id="firebaseui-auth-container"></div>
       </div>
       <hr>
+
 
       <footer>
         <p>&copy; Kill the Princess 2016</p>
