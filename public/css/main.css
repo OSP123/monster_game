@@ -3,12 +3,16 @@
 /* ==========================================================================
    Author's custom styles
    ========================================================================== */
+html {
+  height: 100%;
+}
 
 body { 
   padding-top: 70px;
   background-image: url("../img/battle.jpg");
-  background-size: 100%;
+  background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
   color: white;
 }
 
