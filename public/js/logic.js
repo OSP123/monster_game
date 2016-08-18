@@ -26,15 +26,11 @@ $(document).on('click', '.chooseCharacter', function() {
 });
 
 function signedInDisplay(displayName) {
-	$("#firebaseui-auth-container").hide();
-	$("#firebase_authentication").html("<div class='col-sm-12'>" + "<h1>" + displayName + " is signed in.</h1>" +
-      "</div>");
+	$(".form-signin-heading").html(displayName + " is signed in");
 }
 
 function signedOutDisplay(theUser) {
-	$("#firebaseui-auth-container").show();
-	$("#firebase_authentication").html("<div class='col-sm-12'>" + "<h1>" + displayName + " is signed out.</h1>" +
-      "</div>");
+	$(".form-signin-heading").html("You have signed out");
 }
 
 // Note, this returns a promise

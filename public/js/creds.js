@@ -1,14 +1,14 @@
 // Initialize Firebase
 
-const $email = $("#email_input");
-const $password = $("#password_input");
-const $signIn= $("#btnSignIn");
-const $signOut = $("#btnSignOut");
-const $signUp = $("#btnSignUp");
+const $emailInput = $("#email_input");
+const $passwordInput = $("#password_input");
+const $signInBtn= $("#btnSignIn");
+const $signOutBtn = $("#btnSignOut");
+const $signUpBtn = $("#btnSignUp");
 
-$signIn.click(function(){
-	const email = $email.val();
-	const password = $password.val();
+$signInBtn.on("click", function(){
+	const email = $emailInput.val();
+	const password = $passwordInput.val();
 	const auth = firebase.auth();
 
 	const promise = auth.signInWithEmailAndPassword(email, password);
@@ -17,17 +17,18 @@ $signIn.click(function(){
 	});
 });
 
-$signOut.click(function(){
+$signOutBtn.on("click", function(){
 	firebase.auth().signOut();
 });
 
-$signUp.click(function(){
+$signUpBtn.on("click", function(){
 	// Create some validation for emails
-	const email = $email.val();
-	const password = $password.val();
+	const email = $emailInput.val();
+	const password = $passwordInput.val();
 	const auth = firebase.auth();
 
 	const promise = auth.createUserWithEmailAndPassword(email, password);
+	console.log("signup");
 	promise.catch(function(e){
 		console.log(e.message);
 	});
@@ -36,6 +37,7 @@ $signUp.click(function(){
 firebase.auth().onAuthStateChanged(function(user) {
   if (user) {
     // User is signed in.
+    $signOutBtn.removeClass("hide");
 
     user.getToken().then(function(accessToken) {
 
@@ -50,7 +52,8 @@ firebase.auth().onAuthStateChanged(function(user) {
   });
   } else {
     // User is signed out.
-    signedOutDisplay(user.displayName);
+    // signedOutDisplay(user.displayName);
+    $signOutBtn.addClass("hide");
   }
 }, function(error) {
   console.log(error);
