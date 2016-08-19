@@ -66,7 +66,6 @@ function chooseCharacter(uid, playerObj) {
 }
 
 function seatCheckAndRoomUpdate(uid, thePlayerObject){
-	console.log("Is seat check even running?");
 	return roomsRef.once("value")
 	 	.then(function(snapshot) {
 

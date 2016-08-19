@@ -15,7 +15,7 @@ function signedOutDisplay(theUser) {
 }
 
 function emailVerifyDisplay() {
-	$(".form-signin-heading").html("Please Verify Email to continue");
+	$(".form-signin").html("Please Verify Email to continue");
 }
 
 function toggleSignIn() {
