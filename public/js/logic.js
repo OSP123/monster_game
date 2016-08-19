@@ -93,16 +93,18 @@ function seatCheckAndRoomUpdate(uid, thePlayerObject){
 						  		}
 						  	})
 						  }).then(function(result){
+
 						  	roomProp.ref.set(uid);
+
 						  }).then(function(result){
+
 						  	if (numberOfPlayers < 4) {
 							  	childSnapshot.ref.update({ 
 							  		numPlayers: numberOfPlayers + 1 
 							  	});
 						  	} else if (numberOfPlayers == 4) {
-						  	childSnapshot.ref.update({ locked: true });
+						  		childSnapshot.ref.update({ locked: true });
 						  	}
-
 						  	chooseCharacterPageLoad();
 						  })
 				
@@ -195,12 +197,12 @@ function afterAuth(uid, name) {
 
 		  	}).then(function(playerObject){
 		  		// I want the result to be the player that was created
-		  		if (sessionStorage.getItem("characterScreenLoaded") !== 'true') {
+		  		if (sessionStorage.getItem("characterScreenLoaded") !== 'true' && playerObject.room == null) {
 		  			return seatCheckAndRoomUpdate(uid, playerObject);
-		  		// } else if ((sessionStorage.getItem("characterScreenLoaded") === 'true') && location.href ) {
-
-		  		} else {
+		  		} else if (sessionStorage.getItem("characterScreenLoaded") !== 'true' && playerObject.room != null) {
 		  			// be sure to return the playerObject so that it gets passed to the next function
+		  			chooseCharacterPageLoad();
+		  		} else {
 		  			chooseCharacter(uid, playerObject);
 		  		}
 
@@ -211,8 +213,3 @@ function afterAuth(uid, name) {
 	  }
 	});
 }
-
-
-// window.addEventListener('load', function() {
-// 	initApp();
-// });

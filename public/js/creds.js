@@ -15,7 +15,7 @@ function signedOutDisplay(theUser) {
 }
 
 function emailVerifyDisplay() {
-	$(".form-signin").html("Please Verify Email to continue");
+	$(".form-signin").html("<h1>Please Verify Email to continue.</h2><p>If you've already verified your email, please click on the button below.</p><button id='email_confimed' class='btn btn-lg btn-primary btn-block'>Email Confirmed</button>");
 }
 
 function toggleSignIn() {
@@ -51,6 +51,10 @@ function toggleSignIn() {
     });
     // [END authwithemail]
   }
+}
+
+function reloadPage() {
+	location.reload();
 }
 /**
  * Handles the sign up button press.
@@ -94,6 +98,7 @@ function handleSignUp() {
 /**
  * Sends an email verification to the user.
  */
+
 function sendEmailVerification() {
   // [START sendemailverification]
   firebase.auth().currentUser.sendEmailVerification().then(function() {
@@ -101,7 +106,7 @@ function sendEmailVerification() {
     // [START_EXCLUDE]
     alert('Email Verification Sent!');
     // [END_EXCLUDE]
-  });
+  })
   // [END sendemailverification]
 }
 function sendPasswordReset() {
@@ -130,11 +135,20 @@ function sendPasswordReset() {
 
 function addDisplayNameToUser() {
 	const displayNameValue = $("#display_name_input").val();
+
+	if (displayNameValue.length < 4) {
+	    alert('Please enter an display name with at least 4 characters.');
+	    return;
+	}
+
 	var user = firebase.auth().currentUser;
 
 	user.updateProfile({
 	  displayName: displayNameValue
-	});
+	}).then(function(result){
+		signedInDisplay(user.displayName);
+    afterAuth(user.uid, user.displayName);
+	})
 }
 
 function userDisplayNameCreation() {
@@ -150,6 +164,7 @@ var initApp = function() {
 	    $signOutBtn.removeClass("hide");
 
 	    user.getToken().then(function(accessToken) {
+
 
 	    	if (!user.emailVerified) {
           emailVerifyDisplay();
@@ -177,6 +192,7 @@ var initApp = function() {
 	$(document).on("click", "#btnSignOut", toggleSignIn);
 	$(document).on("click", "#btnSignUp", handleSignUp);
 	$(document).on("click", "#btnDisplayName", addDisplayNameToUser);
+	$(document).on("click", "#email_confimed", reloadPage);
 }
 
 window.onload = function() {
