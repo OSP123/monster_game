@@ -58,7 +58,10 @@ function checkIfPlayerExists(uid) {
 
 function chooseCharacterPageLoad() {
 	sessionStorage.setItem("characterScreenLoaded", "true");
-	window.location = "../chooseCharacter.html";
+	if (window.location.href != "http://localhost:5000/chooseCharacter.html" || ) {
+		window.location = "../chooseCharacter.html";
+	}
+	
 }
 
 function chooseCharacter(uid, playerObj) {
@@ -199,11 +202,9 @@ function afterAuth(uid, name) {
 		  		// I want the result to be the player that was created
 		  		if (sessionStorage.getItem("characterScreenLoaded") !== 'true' && playerObject.room == null) {
 		  			return seatCheckAndRoomUpdate(uid, playerObject);
-		  		} else if (sessionStorage.getItem("characterScreenLoaded") !== 'true' && playerObject.room != null) {
+		  		} else {
 		  			// be sure to return the playerObject so that it gets passed to the next function
 		  			chooseCharacterPageLoad();
-		  		} else {
-		  			chooseCharacter(uid, playerObject);
 		  		}
 
 		  		
