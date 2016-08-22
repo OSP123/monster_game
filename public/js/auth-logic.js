@@ -1,17 +1,26 @@
 // Initialize Firebase
 
-const $emailInput = $("#email_input");
-const $passwordInput = $("#password_input");
-const $signInBtn= $("#btnSignIn");
-const $signOutBtn = $("#btnSignOut");
-const $signUpBtn = $("#btnSignUp");
+var $emailInput = $("#email_input");
+var $passwordInput = $("#password_input");
+var $signInBtn= $("#btnSignIn");
+var $signOutBtn = $("#btnSignOut");
+var $signUpBtn = $("#btnSignUp");
+
 
 function signedInDisplay(displayName) {
-	$(".form-signin-heading").html(displayName + " is signed in");
+	$(".form-signin").html(displayName + " is signed in");
 }
 
-function signedOutDisplay(theUser) {
-	$(".form-signin-heading").html("You have signed out");
+function signedOutDisplay() {
+	$(".form-signin").html('<h2 class="form-signin-heading">You have signed out!</h2>' +
+          '<input id="email_input" type="text" class="form-control" name="username" placeholder="Email Address" required="" autofocus="" />' +
+          '<input id="password_input" type="password" class="form-control" name="password" placeholder="Password" required=""/>' +    
+          '<label class="checkbox">' +
+            '<input type="checkbox" value="remember-me" id="rememberMe" name="rememberMe"> Remember me' +
+          '</label>' +
+          '<button id="btnSignIn" class="btn btn-lg btn-primary btn-block">Login</button>' +
+          '<button id="btnSignUp" class="btn btn-lg btn-primary btn-block">Sign Up</button>');
+
 }
 
 function emailVerifyDisplay() {
@@ -24,8 +33,9 @@ function toggleSignIn() {
     firebase.auth().signOut();
     // [END signout]
   } else {
-    const email = $emailInput.val();
-    const password = $passwordInput.val();
+    var email = $emailInput.val();
+    var password = $passwordInput.val();
+    
     if (email.length < 4) {
       alert('Please enter an email address.');
       return;
@@ -61,8 +71,8 @@ function reloadPage() {
  */
 function handleSignUp() {
 
-  const email = $emailInput.val();
-  const password = $passwordInput.val();
+  var email = $emailInput.val();
+  var password = $passwordInput.val();
 
   console.log(email, password);
 
@@ -110,7 +120,7 @@ function sendEmailVerification() {
   // [END sendemailverification]
 }
 function sendPasswordReset() {
-  const email = $emailInput.val();
+  var email = $emailInput.val();
   // [START sendpasswordemail]
   firebase.auth().sendPasswordResetEmail(email).then(function() {
     // Password Reset Email Sent!
@@ -134,7 +144,7 @@ function sendPasswordReset() {
 }
 
 function addDisplayNameToUser() {
-	const displayNameValue = $("#display_name_input").val();
+	var displayNameValue = $("#display_name_input").val();
 
 	if (displayNameValue.length < 4) {
 	    alert('Please enter an display name with at least 4 characters.');
@@ -175,13 +185,12 @@ var initApp = function() {
         	userDisplayNameCreation();
         }   	
 
-	    	// for (var i = 0; i < 100; i++) {
-	    	// 	addRoomAndEmptySeats();
-	    	// }
+
 	  	});
 	  } else {
 	    // User is signed out.
-	    // signedOutDisplay(user.displayName);
+      removePlayer(uid);
+	    signedOutDisplay();
 	    $signOutBtn.addClass("hide");
 	  }
 	}, function(error) {

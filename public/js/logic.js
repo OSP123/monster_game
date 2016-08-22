@@ -6,24 +6,40 @@ var roomsRef = db.ref('/channels');
 var amOnline = db.ref('/.info/connected');
 var playerChoiceHTML = false;
 
-function addRoomAndEmptySeats() {
+// ** Used to generate empty rooms ** 
+function addRoomAndEmptySeats(numRooms) {
 
-  var newRoom = {
-  	seat1: "empty",
-  	seat2: "empty",
-  	seat3: "empty",
-  	seat4: "empty",
-  	locked: false,
-  	numPlayers: 0
-  }
+	for (var i = 0; i < numRooms; i++) {
+		var newRoom = {
+		  	seat1: "empty",
+		  	seat2: "empty",
+		  	seat3: "empty",
+		  	seat4: "empty",
+		  	locked: false,
+		  	numPlayers: 0
+		  }
 
-  roomsRef.push(newRoom);
+		  roomsRef.push(newRoom);
+	}
+  
 }
 
 $(document).on('click', '.chooseCharacter', function() {
 
   
 });
+
+function removePlayer(uid) {
+	return playersRef.once("value")
+		.then(function(snapshot) {
+			snapshot.forEach(function(childSnapshot) {
+  			if (childSnapshot.val().uid === uid) {
+  				console.log("removing " + childSnapshot.key);
+					childSnapshot.key.remove();
+				}
+			});
+		});
+}
 
 
 // Note, this returns a promise
@@ -47,9 +63,9 @@ function checkIfPlayerExists(uid) {
 			var result = [false];
 			snapshot.forEach(function(childSnapshot) {
   			if (childSnapshot.val().uid === uid) {
-				console.log("We found it!");
-				result[0] = true;
-				result.push(childSnapshot.val());
+					console.log("We found it!");
+					result[0] = true;
+					result.push(childSnapshot.val());
 			}
 		});
 		return result;
@@ -58,7 +74,7 @@ function checkIfPlayerExists(uid) {
 
 function chooseCharacterPageLoad() {
 	sessionStorage.setItem("characterScreenLoaded", "true");
-	if (window.location.href != "http://localhost:5000/chooseCharacter.html" || ) {
+	if (window.location.href != "http://localhost:5000/chooseCharacter.html") {
 		window.location = "../chooseCharacter.html";
 	}
 	
