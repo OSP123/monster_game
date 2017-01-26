@@ -6,6 +6,9 @@ var $signInBtn= $("#btnSignIn");
 var $signOutBtn = $("#btnSignOut");
 var $signUpBtn = $("#btnSignUp");
 
+function userDisplayNameCreation() {
+  $(".form-signin").html('<input id="display_name_input" type="text" class="form-control" name="displayName" placeholder="Display Name" autofocus="" /><button id="btnDisplayName" class="btn btn-lg btn-primary btn-block">Choose Display Name</button> ');
+}
 
 function signedInDisplay(displayName) {
 	$(".form-signin").html(displayName + " is signed in");
@@ -24,7 +27,7 @@ function signedOutDisplay() {
 }
 
 function emailVerifyDisplay() {
-	$(".form-signin").html("<h1>Please Verify Email to continue.</h2><p>If you've already verified your email, please click on the button below.</p><button id='email_confimed' class='btn btn-lg btn-primary btn-block'>Email Confirmed</button>");
+	$(".form-signin").html("<h1>Please Verify Email to continue.</h2><p>If you've already verified your email, please click on the button below.</p><button id='email_confirmed' class='btn btn-lg btn-primary btn-block'>Email Confirmed</button>");
 }
 
 function toggleSignIn() {
@@ -161,10 +164,6 @@ function addDisplayNameToUser() {
 	})
 }
 
-function userDisplayNameCreation() {
-	$(".form-signin").html('<input id="display_name_input" type="text" class="form-control" name="displayName" placeholder="Display Name" autofocus="" /><button id="btnDisplayName" class="btn btn-lg btn-primary btn-block">Choose Display Name</button> ');
-}
-
 var initApp = function() {
 
 	firebase.auth().onAuthStateChanged(function(user) {
@@ -174,7 +173,6 @@ var initApp = function() {
 	    $signOutBtn.removeClass("hide");
 
 	    user.getToken().then(function(accessToken) {
-
 
 	    	if (!user.emailVerified) {
           emailVerifyDisplay();
@@ -201,7 +199,7 @@ var initApp = function() {
 	$(document).on("click", "#btnSignOut", toggleSignIn);
 	$(document).on("click", "#btnSignUp", handleSignUp);
 	$(document).on("click", "#btnDisplayName", addDisplayNameToUser);
-	$(document).on("click", "#email_confimed", reloadPage);
+	$(document).on("click", "#email_confirmed", reloadPage);
 }
 
 window.onload = function() {

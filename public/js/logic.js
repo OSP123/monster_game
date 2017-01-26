@@ -93,12 +93,12 @@ function seatCheckAndRoomUpdate(uid, thePlayerObject){
 
 	 		// look through each room and find one that is empty
 	  	snapshot.forEach(function(childSnapshot) {
-	  		childSnapshot.forEach(function(roomProp) {
+	  		childSnapshot.forEach(function(childSnapshotProperty) {
 	  			
-		  			if (roomProp.val() == "empty" && thePlayerObject.room == null) {
+		  			if (childSnapshotProperty.val() == "empty" && thePlayerObject.room == null) {
 
 		  				var roomKey = childSnapshot.key;
-		  				var nameOfRoom = roomProp.key;
+		  				var nameOfRoom = childSnapshotProperty.key;
 		  				var numberOfPlayers = childSnapshot.val().numPlayers;
 
 							// find Player and assign room key to the room property
@@ -113,7 +113,7 @@ function seatCheckAndRoomUpdate(uid, thePlayerObject){
 						  	})
 						  }).then(function(result){
 
-						  	roomProp.ref.set(uid);
+						  	childSnapshotProperty.ref.set(uid);
 
 						  }).then(function(result){
 
@@ -155,7 +155,7 @@ function createRoom(uid) {
 		});
 }
 
-function createPlayer(uid, displayName, playerExists) {
+function createPlayer(uid, displayName) {
 
   var playerData = {
     name: displayName,
@@ -179,6 +179,7 @@ function createPlayer(uid, displayName, playerExists) {
   // Write the new player's data in the players list.
   var updates = {};
   updates['/players/' + newPlayerKey] = playerData;
+
 
   db.ref().update(updates);
 
